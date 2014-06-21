@@ -2,5 +2,9 @@
     {
         "caption": "Android: Add Imports",
         "command": "android_add_imports"
+    },
+    {
+        "caption": "Android: Generate Getters and Settegs",
+        "command": "android_generate_setters"
     }
 ]
