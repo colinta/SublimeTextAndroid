@@ -24,3 +24,6 @@ Commands
 `android_add_imports`: Scan your source code for class names, add all missing
 imports to the top.  Does a simple sort and replaces your existing import
 statements.
+
+`android_generate_setters`: Scans for instance variable declarations and adds
+missing getter and setter methods to the end of the class definition.
