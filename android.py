@@ -94,7 +94,10 @@ class AndroidAddImportsCommand(sublime_plugin.TextCommand):
                 if len(msg):
                     msg += ', '
                 msg += stmt
-            sublime.status_message('Adding: ' + msg)
+            if msg:
+                sublime.status_message('Adding: ' + msg)
+            else:
+                sublime.status_message('Nothing to add')
 
             to_import_stmt = map(lambda stmt: "import " + stmt + ";\n", to_import)
 
