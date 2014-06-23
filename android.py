@@ -121,9 +121,9 @@ class AndroidGenerateSettersCommand(sublime_plugin.TextCommand):
         last_line = None
         for region in line_regions:
             line = self.view.substr(region)
-            attr_match = re.search(r'^([ \t]+)(private|public) ((?!class)\w+(?:\[\])?) [m_]?(\w+)\b(?!\()', line)
-            getter_match = re.search(r'^[ \t]+(private|public) (\w+(?:\[\])?) get([A-Z]\w*)\b(?=\()', line)
-            setter_match = re.search(r'^[ \t]+(private|public) (\w+(?:\[\])?) set([A-Z]\w*)\b(?=\()', line)
+            attr_match = re.search(r'^([ \t]+)(private|public) ((?!class)(?!static)[\w<>]+(?:\[\])?) [ms]?[_]{0,2}(\w+)\b(?!\()', line)
+            getter_match = re.search(r'^[ \t/]+(private|public) ([\w<>]+(?:\[\])?) (?:get|is)([A-Z]\w*)\b(?=\()', line)
+            setter_match = re.search(r'^[ \t/]+(private|public) ([\w<>]+(?:\[\])?) set([A-Z]\w*)\b(?=\()', line)
             last_line_match = re.search(r'^}', line)
 
             if last_line_match:
@@ -171,10 +171,14 @@ class AndroidGenerateSettersCommand(sublime_plugin.TextCommand):
             varclass = entry['varclass']
             varname = entry['varname']
             ucfirst = varname[0].upper() + varname[1:]
-            if entry['getter']:
-                getter = '{ws}public {varclass} get{ucfirst}() {{ return _{varname}; }}\n'.format(varclass=varclass, varname=varname, ucfirst=ucfirst, ws=ws, tab='    ')
-                self.view.replace(edit, sublime.Region(last_line, last_line), getter)
             if entry['setter']:
-                setter = '{ws}public {varclass} set{ucfirst}({varclass} {varname}) {{ _{varname} = {varname}; }}\n'.format(varclass=varclass, varname=varname, ucfirst=ucfirst, ws=ws, tab='    ')
+                setter = '{ws}public void set{ucfirst}({varclass} {varname}) {{ _{varname} = {varname}; }}\n'.format(varclass=varclass, varname=varname, ucfirst=ucfirst, ws=ws, tab='    ')
                 self.view.replace(edit, sublime.Region(last_line, last_line), setter)
+            if entry['getter']:
+                if entry['varclass'] == 'boolean':
+                    prefix = 'is'
+                else:
+                    prefix = 'get'
+                getter = '{ws}public {varclass} {prefix}{ucfirst}() {{ return _{varname}; }}\n'.format(varclass=varclass, prefix=prefix, varname=varname, ucfirst=ucfirst, ws=ws, tab='    ')
+                self.view.replace(edit, sublime.Region(last_line, last_line), getter)
 
